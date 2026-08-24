@@ -15,49 +15,16 @@ function sync(){
  $('reticleToggle').textContent=state.reticle?'RETÍCULA ON':'RETÍCULA OFF';$('reticleToggle').classList.toggle('active',state.reticle);$('scaleToggle').textContent=state.scale?'ESCALA ON':'ESCALA OFF';$('scaleToggle').classList.toggle('active',state.scale);$('measureToggle').textContent=state.measurement?'MEDICIÓN ON':'MEDICIÓN OFF';$('measureToggle').classList.toggle('active',state.measurement);$('vrToggle').textContent=state.vr?'VR BOX ON':'VR BOX OFF';$('vrToggle').classList.toggle('active',state.vr);
  LW.vr.setHUD(state.vr); updateVRHudText();
 }
-function updateVRHudText(){
- document.querySelectorAll('.vr-hud').forEach((hud)=>{
-   hud.innerHTML=`<div class="topbar"><span>${$('modeLabel').textContent}</span><span>${$('cameraLabel').textContent}</span><span>${$('fps').textContent}</span></div>
-   <div class="compass-hud"><div class="compass-window"><div class="compass-ticks"></div><div class="compass-center"></div></div><div class="compass-readout">${$('compassReadout').textContent}</div></div>
-   <div class="distance">DIST: ${$('distanceHud').textContent.replace('DIST: ','')}</div>
-   <div class="hint">${$('hint').textContent}</div>`;
- });
- if(LW.compass?.syncVR) LW.compass.syncVR();
-}
+function updateVRHudText(){document.querySelectorAll('.vr-hud').forEach((hud)=>{hud.innerHTML=`<div class="topbar"><span>${$('modeLabel').textContent}</span><span>${$('cameraLabel').textContent}</span><span>${$('fps').textContent}</span></div><div class="compass-hud"><div class="compass-window"><div class="compass-ticks"></div><div class="compass-center"></div></div><div class="compass-readout">${$('compassReadout').textContent}</div></div><div class="distance">DIST: ${$('distanceHud').textContent.replace('DIST: ','')}</div><div class="hint">${$('hint').textContent}</div>`});if(LW.compass?.syncVR)LW.compass.syncVR()}
 function isLandscape(){return window.innerWidth>window.innerHeight}
 function updateOrientationGuard(){const portrait=!isLandscape();$('orientationGuard').classList.toggle('hidden',!portrait);$('menuBtn').classList.toggle('hidden',portrait);$('compassHUD').classList.toggle('hidden',portrait||state.vr);$('distanceHud').classList.toggle('hidden',portrait||state.vr);$('hint').classList.toggle('hidden',portrait||state.vr);return !portrait}
-function resize(){const dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);const pw=Math.min(960,Math.max(640,Math.round(innerWidth*dpr))),vw=video.videoWidth||1920,vh=video.videoHeight||1080;work.width=pw;work.height=Math.max(360,Math.round(pw/(vw/vh)));updateOrientationGuard();}
-async function start(){
- $('bootMessage').textContent='';try{if(!isLandscape()){updateOrientationGuard();$('bootMessage').textContent='GIRA EL DISPOSITIVO HORIZONTALMENTE PARA INICIAR.';return;}await LW.compass.start();await LW.camera.start();$('boot').classList.add('hidden');$('cameraLabel').textContent='CAM TRASERA';resize();render()}
- catch(e){let m='No se pudo iniciar la cámara.';if(e.name==='NotAllowedError')m='Permiso de cámara bloqueado. Habilitalo para este sitio.';if(e.name==='NotReadableError')m='La cámara está ocupada o Safari no pudo acceder a ella.';$('bootMessage').textContent=m;console.error(e)}}
+function resize(){const dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);const pw=Math.min(960,Math.max(640,Math.round(innerWidth*dpr))),vw=video.videoWidth||1920,vh=video.videoHeight||1080;work.width=pw;work.height=Math.max(360,Math.round(pw/(vw/vh)));updateOrientationGuard()}
+async function start(){$('bootMessage').textContent='';try{if(!isLandscape()){updateOrientationGuard();$('bootMessage').textContent='GIRA EL DISPOSITIVO HORIZONTALMENTE PARA INICIAR.';return;}await LW.compass.start();await LW.camera.start();$('boot').classList.add('hidden');$('cameraLabel').textContent='CAM TRASERA';resize();render()}catch(e){let m='No se pudo iniciar la cámara.';if(e.name==='NotAllowedError')m='Permiso de cámara bloqueado. Habilitalo para este sitio.';if(e.name==='NotReadableError')m='La cámara está ocupada o Safari no pudo acceder a ella.';$('bootMessage').textContent=m;console.error(e)}}
 function render(){if(LW.camera.running)drawFrame();drawOverlay();frames++;const n=performance.now();if(n-fpsTime>1000){$('fps').textContent=frames+' FPS';frames=0;fpsTime=n;updateVRHudText()}raf=requestAnimationFrame(render)}
 function drawFrame(){const vw=video.videoWidth,vh=video.videoHeight,cw=canvas.width,ch=canvas.height,asp=cw/ch,src=vw/vh,z=state.zoom;let sw,sh;if(src>asp){sh=vh/z;sw=sh*asp}else{sw=vw/z;sh=sw/asp}sw=Math.min(sw,vw);sh=Math.min(sh,vh);const sx=(vw-sw)/2,sy=(vh-sh)/2;work.height=Math.max(360,Math.round(work.width/(sw/sh)));wctx.drawImage(video,sx,sy,sw,sh,0,0,work.width,work.height);const img=wctx.getImageData(0,0,work.width,work.height);LW.image.process(img.data,state);wctx.putImageData(img,0,0);ctx.clearRect(0,0,cw,ch);if(state.vr)LW.vr.draw(ctx,work,cw,ch,state);else ctx.drawImage(work,0,0,cw,ch)}
-function drawOverlay(){if(state.vr){LW.vr.drawOverlay(ctx,canvas.width,canvas.height,state,point)}else LW.reticle.draw(ctx,canvas.width,canvas.height,{...state,point})}
+function drawOverlay(){if(state.vr)LW.vr.drawOverlay(ctx,canvas.width,canvas.height,state,point);else LW.reticle.draw(ctx,canvas.width,canvas.height,{...state,point})}
 function setDistance(res){const text=res?res.text:'--';$('distanceHud').textContent='DIST: '+text;$('distanceValue').textContent=text;state.lastDistance=res?.value??null;updateVRHudText()}
-function bind(){
- $('startBtn').onclick=start;$('menuBtn').onclick=()=>$('controls').classList.toggle('hidden');$('closeBtn').onclick=()=>$('controls').classList.add('hidden');
- document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;sync();save()});
- [['brightness','brightness'],['contrast','contrast'],['gain','gain'],['zoom','zoom'],['fov','fov'],['vrSeparation','vrSeparation'],['vrScale','vrScale']].forEach(([id,key])=>$(id).oninput=e=>{state[key]=+e.target.value;if(key==='fov')LW.measure.fov=state.fov;sync();save()});
- $('reticleToggle').onclick=()=>{state.reticle=!state.reticle;sync();save()};$('scaleToggle').onclick=()=>{state.scale=!state.scale;sync();save()};$('measureToggle').onclick=()=>{state.measurement=!state.measurement;if(!state.measurement)point=null;sync();save()};$('vrToggle').onclick=()=>{state.vr=!state.vr;sync();save();updateOrientationGuard()};
- $('resetBtn').onclick=()=>{state={...DEFAULTS};point=null;LW.measure.fov=state.fov;sync();save();setDistance(null)};
- canvas.addEventListener('pointerup',e=>{if(!state.measurement)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;point={x:x/r.width*canvas.width,y:y/r.height*canvas.height};setDistance(LW.measure.fromScreenY(e.clientY));if(y/r.height<=.5)point=null;});
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  try{
-    load();
-    bind();
-    resize();
-    addEventListener('resize',resize);
-    addEventListener('orientationchange',()=>setTimeout(resize,250));
-    if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(console.warn)}
-  }catch(e){
-    console.error('Lonewolf startup:',e);
-    const boot=document.getElementById('boot');
-    const msg=document.getElementById('bootMessage');
-    if(boot) boot.classList.remove('hidden');
-    if(msg) msg.textContent='No se pudo iniciar la aplicación. Recargá esta Web App.';
-  }
-});
-
+function bind(){$('startBtn').onclick=start;$('menuBtn').onclick=()=>$('controls').classList.toggle('hidden');$('closeBtn').onclick=()=>$('controls').classList.add('hidden');document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;sync();save()});[['brightness','brightness'],['contrast','contrast'],['gain','gain'],['zoom','zoom'],['fov','fov'],['vrSeparation','vrSeparation'],['vrScale','vrScale']].forEach(([id,key])=>$(id).oninput=e=>{state[key]=+e.target.value;if(key==='fov')LW.measure.fov=state.fov;sync();save()});$('reticleToggle').onclick=()=>{state.reticle=!state.reticle;sync();save()};$('scaleToggle').onclick=()=>{state.scale=!state.scale;sync();save()};$('measureToggle').onclick=()=>{state.measurement=!state.measurement;if(!state.measurement)point=null;sync();save()};$('vrToggle').onclick=()=>{state.vr=!state.vr;sync();save();updateOrientationGuard()};$('resetBtn').onclick=()=>{state={...DEFAULTS};point=null;LW.measure.fov=state.fov;sync();save();setDistance(null)};canvas.addEventListener('pointerup',e=>{if(!state.measurement)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;point={x:x/r.width*canvas.width,y:y/r.height*canvas.height};setDistance(LW.measure.fromScreenY(e.clientY));if(y/r.height<=.5)point=null})}
+document.addEventListener('DOMContentLoaded',()=>{try{load();bind();resize();addEventListener('resize',resize);addEventListener('orientationchange',()=>setTimeout(resize,250));if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{reg.update().catch(()=>{});if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'})}).catch(console.warn)}}catch(e){console.error('Lonewolf startup:',e);const boot=document.getElementById('boot'),msg=document.getElementById('bootMessage');if(boot)boot.classList.remove('hidden');if(msg)msg.textContent='No se pudo iniciar la aplicación. Recargá esta Web App.'}});
 window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);LW.camera.stop()});
 })();
