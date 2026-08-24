@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#020803">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./css/style.css">
+<title>Lonewolf Nightvision VR</title>
+</head>
+<body>
+<div id="app">
+  <video id="camera" autoplay playsinline muted></video>
+  <canvas id="view"></canvas>
+
+  <div id="boot" class="boot">
+    <div class="boot-box">
+      <div class="brand">LONEWOLF</div>
+      <div class="subtitle">NIGHTVISION / VR</div>
+      <button id="startBtn" class="primary">INICIAR CÁMARA TRASERA</button>
+      <p id="bootMessage">Se requiere permiso para acceder a la cámara.</p>
+    </div>
+  </div>
+
+  <div id="hud" class="hud">
+    <div class="topbar">
+      <span id="modeLabel">VERDE NV</span>
+      <span id="cameraLabel">CAM TRASERA</span>
+      <span id="fps">-- FPS</span>
+    </div>
+    <div id="distanceHud" class="distance">DIST: --</div>
+    <div id="hint" class="hint">TOCÁ LA BASE DEL OBJETO PARA MEDIR</div>
+    <button id="menuBtn" class="menu" aria-label="Abrir controles">☰</button>
+    <aside id="controls" class="controls hidden">
+      <header>
+        <div><b>LONEWOLF</b><small>NIGHTVISION / VR</small></div>
+        <button id="closeBtn" class="close">×</button>
+      </header>
+
+      <section><h2>MODO DE VISIÓN</h2>
+        <div class="grid">
+          <button data-mode="green" class="active">VERDE NV</button>
+          <button data-mode="bw">BLANCO / NEGRO</button>
+          <button data-mode="thermal">TÉRMICO DIGITAL</button>
+          <button data-mode="normal">NORMAL</button>
+        </div>
+      </section>
+
+      <section><h2>IMAGEN</h2>
+        <label>BRILLO <output id="brightnessOut">1.20</output><input id="brightness" type="range" min="0.60" max="2" step="0.05" value="1.20"></label>
+        <label>CONTRASTE <output id="contrastOut">1.35</output><input id="contrast" type="range" min="0.60" max="2.50" step="0.05" value="1.35"></label>
+        <label>GANANCIA <output id="gainOut">1.00</output><input id="gain" type="range" min="0.50" max="3" step="0.05" value="1.00"></label>
+        <label>ZOOM <output id="zoomOut">1.0×</output><input id="zoom" type="range" min="1" max="4" step="0.05" value="1"></label>
+      </section>
+
+      <section><h2>RETÍCULA Y MEDICIÓN</h2>
+        <div class="grid">
+          <button id="reticleToggle" class="active">RETÍCULA ON</button>
+          <button id="scaleToggle" class="active">ESCALA ON</button>
+          <button id="measureToggle" class="active">MEDICIÓN ON</button>
+          <button id="vrToggle">VR BOX OFF</button>
+        </div>
+      </section>
+
+      <section><h2>MEDICIÓN TANGENCIAL</h2>
+        <div class="row"><span>OBJETO REFERENCIA</span><b>50 × 50 CM</b></div>
+        <div class="row"><span>ALTURA DE VISIÓN</span><b>1.65 M</b></div>
+        <div class="row"><span>RANGO</span><b>30–100 M</b></div>
+        <label>FOV VERTICAL <output id="fovOut">50°</output><input id="fov" type="range" min="40" max="60" step="1" value="50"></label>
+        <div class="distance-card"><span>DISTANCIA ESTIMADA</span><strong id="distanceValue">--</strong></div>
+        <p class="help">Tocá la base del objeto. El cálculo tangencial usa 1.65 m de altura de visión. El cuadro 50 × 50 cm es una referencia visual y de calibración, no un sensor automático.</p>
+      </section>
+
+      <section><h2>VR BOX</h2>
+        <label>SEPARACIÓN <output id="vrSeparationOut">10%</output><input id="vrSeparation" type="range" min="0" max="0.20" step="0.01" value="0.10"></label>
+        <label>ESCALA VR <output id="vrScaleOut">1.00×</output><input id="vrScale" type="range" min="0.85" max="1.15" step="0.01" value="1"></label>
+      </section>
+
+      <section><button id="resetBtn" class="secondary">RESTABLECER AJUSTES</button></section>
+    </aside>
+  </div>
+</div>
+<script src="./js/camera.js"></script>
+<script src="./js/image-processing.js"></script>
+<script src="./js/measurement.js"></script>
+<script src="./js/reticle.js"></script>
+<script src="./js/vr.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>
