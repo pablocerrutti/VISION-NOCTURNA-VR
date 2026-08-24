@@ -1,0 +1,15 @@
+window.LW=window.LW||{};
+LW.camera={
+  stream:null,track:null,running:false,
+  async start(){
+    const video=document.getElementById('camera');
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('getUserMedia no disponible');
+    this.stop();
+    this.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080},frameRate:{ideal:30,max:30}},audio:false});
+    video.srcObject=this.stream; video.muted=true; video.playsInline=true;
+    await new Promise(r=>video.readyState>=2&&video.videoWidth?r():video.onloadedmetadata=r); await video.play();
+    this.track=this.stream.getVideoTracks()[0]; this.running=true;
+    return this.track.getSettings?this.track.getSettings():{};
+  },
+  stop(){if(this.stream)this.stream.getTracks().forEach(t=>t.stop());this.stream=null;this.track=null;this.running=false;}
+};
