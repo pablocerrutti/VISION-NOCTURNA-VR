@@ -1,5 +1,6 @@
-const CACHE_NAME='lonewolf-nightvision-v2.4.0';
+const CACHE_NAME='lonewolf-nightvision-v2.5.0';
 const SHELL=[
+  './',
   './index.html',
   './css/style.css',
   './js/camera.js',
@@ -34,39 +35,39 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // En modo Web App de iPhone, la navegación inicial debe resolverse
-  // siempre contra el index cacheado o la red, evitando una respuesta
-  // antigua/vacía para "./".
+  // iOS Safari/Web App: para navegación usamos cache-first.
+  // Esto evita que una Web App instalada quede en blanco si Safari
+  // intenta arrancar sin red o durante una actualización del SW.
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      caches.match('./index.html').then(cached =>
-        fetch(event.request, { cache: 'no-store' })
-          .then(response => {
-            if (response && response.ok) {
-              const copy = response.clone();
-              caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
-            }
-            return response;
-          })
-          .catch(() => cached || caches.match('./index.html'))
-      )
+      caches.match('./index.html').then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          }
+          return response;
+        });
+      }).catch(() => caches.match('./index.html'))
     );
     return;
   }
 
+  // Assets: cache-first y actualización silenciosa desde red.
   event.respondWith(
-    fetch(event.request, { cache: 'no-store' })
-      .then(response => {
+    caches.match(event.request).then(cached => {
+      const network = fetch(event.request).then(response => {
         if (response && response.ok) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         }
         return response;
-      })
-      .catch(() => caches.match(event.request))
+      }).catch(() => cached);
+      return cached || network;
+    })
   );
 });
