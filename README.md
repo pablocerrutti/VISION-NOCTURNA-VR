@@ -25,4 +25,4 @@ Visor digital de baja luminosidad para teléfono y VR Box.
 La escala es una referencia trigonométrica para estimación visual. La precisión real depende del FOV de la cámara, alineación del objeto, estabilidad del teléfono y características ópticas del VR Box.
 
 ## Sensores en iPhone
-La aplicación solicita el permiso de orientación durante el botón inicial de arranque, ya que iOS exige una activación del usuario para solicitar acceso a los sensores de orientación. En HTTPS/Safari moderno, `DeviceOrientationEvent.requestPermission(true)` puede solicitar también los datos necesarios para orientación absoluta. citeturn1search0
+La aplicación solicita el permiso de orientación durante el botón inicial de arranque. iOS/Safari requiere una activación del usuario para solicitar acceso a los sensores de orientación cuando `requestPermission()` está disponible; para orientación absoluta se solicita el acceso adicional al magnetómetro.
