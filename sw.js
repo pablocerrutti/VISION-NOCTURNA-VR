@@ -1,5 +1,5 @@
-const CACHE_NAME='lonewolf-nightvision-v2.6.0';
-const SHELL=['./','./index.html','./css/style.css','./js/camera.js','./js/image-processing.js','./js/measurement-v2.js','./js/reticle.js','./js/vr.js','./js/compass-v2.js','./js/vr-control.js','./js/app-v2.js','./js/manifest.json','./manifest.json','./assets/icon-192.png','./assets/icon-512.png'];
+const CACHE_NAME='lonewolf-nightvision-v2.6.1';
+const SHELL=['./','./index.html','./css/style.css','./js/camera.js','./js/image-processing.js','./js/measurement-v2.js','./js/reticle.js','./js/vr.js','./js/compass-v2.js','./js/vr-control.js','./js/app-v2.js','./manifest.json','./assets/icon-192.png','./assets/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('message',event=>{if(event.data&&event.data.type==='SKIP_WAITING')self.skipWaiting()});
