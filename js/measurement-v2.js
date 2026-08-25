@@ -13,7 +13,7 @@ LW.measure={
  effectiveFov(zoom=1,viewportWidth=innerWidth,viewportHeight=innerHeight){return this.verticalFov(viewportWidth,viewportHeight,zoom)},
  angleToDistance(angle,size=this.targetHeight){if(!Number.isFinite(angle)||angle<=0)return Infinity;return (Number(size)||this.targetHeight)/(2*Math.tan(angle/2))},
  outOfRange(){return{value:null,text:'FUERA DE RANGO'}},
- distanceFromAngle(angle,size=this.targetHeight){if(!Number.isFinite(angle)||angle<=0)return this.outOfRange();const d=this.angleToDistance(angle,size);if(!Number.isFinite(d)||d<this.min||d>this.max)return this.outOfRange();return{value:d,text:d.toFixed(1)+' M'},
+ distanceFromAngle(angle,size=this.targetHeight){if(!Number.isFinite(angle)||angle<=0)return this.outOfRange();const d=this.angleToDistance(angle,size);if(!Number.isFinite(d)||d<this.min||d>this.max)return this.outOfRange();return{value:d,text:d.toFixed(1)+' M'}},
  distanceFromPitchDegrees(pitch){const a=Math.abs(Number(pitch));if(!Number.isFinite(a))return this.outOfRange();return this.distanceFromAngle(a*Math.PI/180,this.cameraHeight)},
  milsFromAngle(angle){return Number.isFinite(angle)?Math.tan(angle)*1000:null},
  distanceFromMils(mils,size=this.targetHeight){const m=Number(mils),s=Number(size);if(!Number.isFinite(m)||m<=0||!Number.isFinite(s)||s<=0)return this.outOfRange();return this.distanceFromAngle(Math.atan(m/1000),s)},
