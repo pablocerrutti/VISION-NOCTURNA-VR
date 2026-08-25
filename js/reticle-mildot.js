@@ -11,7 +11,6 @@ LW.reticle={
  },
  milDots(ctx,cx,cy,w,h,c){
   const vf=(LW.measure?.effectiveFov?LW.measure.effectiveFov(.9,w,h):35.06)*Math.PI/180;
-  // 1 MIL = 0.001 rad. Pixel spacing for the calibrated camera FOV.
   const gap=Math.max(3,(h/2)*Math.tan(.001)/Math.tan(vf/2));
   const r=Math.max(2,w/1400);ctx.save();ctx.fillStyle=c;ctx.globalAlpha=.95;
   for(let i=-5;i<=5;i++){if(i){ctx.beginPath();ctx.arc(cx+i*gap,cy,r,0,Math.PI*2);ctx.fill()}}
@@ -20,14 +19,21 @@ LW.reticle={
   ctx.globalAlpha=.9;ctx.font=`${Math.max(11,w/130)}px monospace`;ctx.textAlign='left';ctx.fillText('1 MIL',cx+gap+5,cy-gap-5);ctx.restore();
  },
  targetReference(ctx,cx,cy,w,h,c){
-  const gap=Math.max(3,(h/2)*Math.tan(.001)/Math.tan((LW.measure?.effectiveFov?.(.9,w,h)||35.06)*Math.PI/360));
+  const vf=(LW.measure?.effectiveFov?LW.measure.effectiveFov(.9,w,h):35.06)*Math.PI/180;
+  const gap=Math.max(3,(h/2)*Math.tan(.001)/Math.tan(vf/2));
   ctx.save();ctx.strokeStyle=c;ctx.globalAlpha=.72;ctx.lineWidth=Math.max(1,w/1100);ctx.setLineDash([8,8]);
-  // Known target: 75 x 45 cm. This is a visual reference only; distance is
-  // obtained from the MILs subtended by the target, exactly like a Mil-Dot scope.
   const rw=6*gap,rh=10*gap;
   ctx.strokeRect(cx-rw/2,cy-rh/2,rw,rh);ctx.setLineDash([]);
-  ctx.font=`${Math.max(11,w/150)}px monospace`;ctx.textAlign='center';ctx.fillText('75×45 CM · 0.9×',cx,cy+rh/2+Math.max(14,w/90));
-  ctx.textAlign='left';ctx.fillText('10–150 M',cx+rw/2+8,cy+5);
+  ctx.font=`bold ${Math.max(12,w/125)}px monospace`;ctx.textAlign='center';
+  ctx.fillText('75 × 45 CM',cx,cy+rh/2+Math.max(16,w/85));
+  ctx.textAlign='left';
+  ctx.fillText('10 M',cx+rw/2+10,cy-rh/2);
+  ctx.fillText('25 M',cx+rw/2+10,cy-rh*.1667);
+  ctx.fillText('50 M',cx+rw/2+10,cy+rh*.1667);
+  ctx.fillText('75 M',cx+rw/2+10,cy+rh*.5);
+  ctx.fillText('100 M',cx+rw/2+10,cy+rh*.8333);
+  ctx.fillText('125 M',cx+rw/2+10,cy+rh*1.1667);
+  ctx.fillText('150 M',cx+rw/2+10,cy+rh*1.5);
   ctx.restore();
  },
  measureRing(ctx,x,y,w,p,confirmed){const r=Math.max(24,w*.03);ctx.save();ctx.lineWidth=Math.max(3,w/500);ctx.strokeStyle='rgba(110,255,130,.28)';ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();if(p>0){ctx.strokeStyle=confirmed?'rgba(90,255,110,.98)':'rgba(110,255,130,.98)';ctx.lineWidth=Math.max(4,w/430);ctx.beginPath();ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,p));ctx.stroke()}ctx.restore()}
