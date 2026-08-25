@@ -1,9 +1,8 @@
 window.LW=window.LW||{};
 LW.measureGesture=(()=>{
   let listening=false,last={alpha:null,elevation:null,time:0},lastTrigger=0;
-  // Activation deliberately requires a clearly intentional 10° movement.
-  // The 1-second fixation used by app-v2.js remains unchanged after activation.
-  const TRIGGER_DEG=10.0,CONFIRM_DEG=1.2,COOLDOWN_MS=1800,MAX_TRIGGER_INTERVAL=220;
+  // Deliberate activation gesture: 30° avoids accidental head/camera movement.
+  const TRIGGER_DEG=30.0,COOLDOWN_MS=2200,MAX_TRIGGER_INTERVAL=260;
   const finite=v=>Number.isFinite(v);
   const wrap=(a,b)=>{let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d};
   function landscapeElevation(e){
@@ -22,15 +21,13 @@ LW.measureGesture=(()=>{
     const now=performance.now(),a=Number(e.alpha);if(!finite(a))return;
     const prev=last.alpha,prevTime=last.time;last.alpha=a;last.time=now;
     if(prev===null||now-prevTime>MAX_TRIGGER_INTERVAL)return;
-    const d=Math.abs(wrap(a,prev));
-    if(d>=TRIGGER_DEG)trigger('horizontal',now);
+    if(Math.abs(wrap(a,prev))>=TRIGGER_DEG)trigger('horizontal',now);
   }
   function handleMotion(e){
     const now=performance.now(),elev=landscapeElevation(e);if(!finite(elev))return;
     const prev=last.elevation,prevTime=last.time;last.elevation=elev;last.time=now;
     if(prev===null||now-prevTime>MAX_TRIGGER_INTERVAL)return;
-    const d=Math.abs(elev-prev);
-    if(d>=TRIGGER_DEG)trigger('vertical',now);
+    if(Math.abs(elev-prev)>=TRIGGER_DEG)trigger('vertical',now);
   }
   function start(onShake){
     if(listening)return true;listening=true;LW.measureGesture._onShake=onShake;
