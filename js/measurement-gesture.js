@@ -19,7 +19,21 @@ LW.measureGesture=(()=>{
   function handleOrientation(e){if(!isLandscape())return;const now=performance.now(),yaw=Number(e.alpha);if(!finite(yaw))return;if(lastTime&&now-lastTime>MAX_SAMPLE_INTERVAL){baselineYaw=yaw;reset()}lastTime=now;check(yaw,now)}
   function start(onShake){if(listening)return true;listening=true;LW.measureGesture._onShake=onShake;baselineYaw=null;lastTime=performance.now();reset();lastTrigger=lastTime;window.addEventListener('deviceorientationabsolute',handleOrientation,true);window.addEventListener('deviceorientation',handleOrientation,true);return true}
   function stop(){if(!listening)return;listening=false;window.removeEventListener('deviceorientationabsolute',handleOrientation,true);window.removeEventListener('deviceorientation',handleOrientation,true)}
-  async function requestPermission(){try{let orientation='granted',motion='granted';if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function')motion=await DeviceMotionEvent.requestPermission();if(motion!=='granted')return false;if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function')orientation=await DeviceOrientationEvent.requestPermission();return orientation==='granted'}catch(e){console.warn('Sensor permission:',e);return false}}
+  async function requestPermission(){
+    try{
+      // Camera startup must never be blocked by sensor permission. Request orientation
+      // permission when the platform exposes it; measurement can be unavailable if denied.
+      if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
+        const r=await DeviceOrientationEvent.requestPermission();
+        if(r!=='granted')console.warn('Orientación no concedida; cámara seguirá iniciando.');
+      }
+      if(typeof DeviceMotionEvent!=='undefined'&&typeof DeviceMotionEvent.requestPermission==='function'){
+        const r=await DeviceMotionEvent.requestPermission();
+        if(r!=='granted')console.warn('Movimiento no concedido; cámara seguirá iniciando.');
+      }
+    }catch(e){console.warn('Sensor permission:',e)}
+    return true;
+  }
   function pitchDegrees(){return null}
   function orientation(){return screen.orientation?.angle??(innerWidth>innerHeight?90:0)}
   return{start,stop,requestPermission,pitchDegrees,orientation};
