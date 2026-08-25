@@ -22,19 +22,11 @@ LW.reticle={
   const vf=(LW.measure?.effectiveFov?LW.measure.effectiveFov(.9,w,h):35.06)*Math.PI/180;
   const gap=Math.max(3,(h/2)*Math.tan(.001)/Math.tan(vf/2));
   ctx.save();ctx.strokeStyle=c;ctx.globalAlpha=.72;ctx.lineWidth=Math.max(1,w/1100);ctx.setLineDash([8,8]);
-  const rw=6*gap,rh=10*gap;
-  ctx.strokeRect(cx-rw/2,cy-rh/2,rw,rh);ctx.setLineDash([]);
-  ctx.font=`bold ${Math.max(12,w/125)}px monospace`;ctx.textAlign='center';
-  ctx.fillText('75 × 45 CM',cx,cy+rh/2+Math.max(16,w/85));
+  const rw=6*gap,rh=10*gap;ctx.strokeRect(cx-rw/2,cy-rh/2,rw,rh);ctx.setLineDash([]);
+  ctx.font=`bold ${Math.max(12,w/125)}px monospace`;ctx.textAlign='center';ctx.fillText('75 × 45 CM',cx,cy+rh/2+Math.max(16,w/85));
   ctx.textAlign='left';
-  ctx.fillText('10 M',cx+rw/2+10,cy-rh/2);
-  ctx.fillText('25 M',cx+rw/2+10,cy-rh*.1667);
-  ctx.fillText('50 M',cx+rw/2+10,cy+rh*.1667);
-  ctx.fillText('75 M',cx+rw/2+10,cy+rh*.5);
-  ctx.fillText('100 M',cx+rw/2+10,cy+rh*.8333);
-  ctx.fillText('125 M',cx+rw/2+10,cy+rh*1.1667);
-  ctx.fillText('150 M',cx+rw/2+10,cy+rh*1.5);
-  ctx.restore();
+  const labels=[['10 M',-5],['25 M',-2.5],['50 M',0],['75 M',2.5],['100 M',5],['125 M',7.5],['150 M',10]];
+  labels.forEach(([label,m])=>ctx.fillText(label,cx+rw/2+10,cy+m*gap));ctx.restore();
  },
  measureRing(ctx,x,y,w,p,confirmed){const r=Math.max(24,w*.03);ctx.save();ctx.lineWidth=Math.max(3,w/500);ctx.strokeStyle='rgba(110,255,130,.28)';ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();if(p>0){ctx.strokeStyle=confirmed?'rgba(90,255,110,.98)':'rgba(110,255,130,.98)';ctx.lineWidth=Math.max(4,w/430);ctx.beginPath();ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,p));ctx.stroke()}ctx.restore()}
 };
