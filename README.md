@@ -3,26 +3,29 @@
 Visor digital de baja luminosidad para teléfono y VR Box.
 
 ## Versión actual
-- Retícula VR corregida para ambos ojos.
+- Retícula VR duplicada correctamente para ambos ojos.
 - HUD y brújula duplicados por ojo en VR.
 - Zoom inicial conservado en **0.9×**.
 - Brújula basada en orientación absoluta del dispositivo cuando está disponible, con `webkitCompassHeading` para iPhone.
-- Brújula más grande, legible y separada del borde superior.
+- Modo **NORMAL** en color real de la cámara.
 - Medición tangencial con referencia **45 × 45 cm** a **20 m**.
-- Escala reglada vertical de **20 a 100 m**, calculada según la relación tangencial de la referencia.
-- Puntero VR controlado mediante sensores de orientación.
-- Selección **Dwell de 1 segundo** para usar el visor sin tocar la pantalla dentro del VR Box.
-- La selección fija la base del objeto y muestra la distancia aproximada.
+- Altura de cámara **1,65 m** y rango operativo **5–100 m**.
+- Punto de medición fijado en el **centro de la retícula**.
+- Inicio de medición mediante sacudida de cabeza **izquierda → derecha**.
+- Confirmación mediante círculo central que se completa en verde al mantener la cabeza estable.
+- Cierre de medición mediante sacudida de cabeza **abajo → arriba**.
+- Distancia mostrada **a la derecha de la retícula**.
 - Service Worker versionado para actualizar correctamente la Web App de iPhone.
 
-## Uso de medición en VR
-1. Activá **VR BOX**.
-2. Colocá la parte superior del objeto de 45 × 45 cm sobre la línea central de la retícula.
-3. Mové suavemente la cabeza/teléfono hasta que el puntero quede sobre la base del objeto y coincida con la marca de la escala.
-4. Mantené la cabeza quieta durante aproximadamente **1 segundo**.
-5. El puntero se completa y la aplicación fija la medición.
+## Uso de medición
+1. Activá **MEDICIÓN ON**.
+2. Apuntá el centro de la retícula a la **base del objeto**.
+3. Hacé una sacudida clara de cabeza de **izquierda a derecha**.
+4. Mantené la cabeza quieta. El círculo alrededor de la retícula se completa en verde.
+5. Al completarse, la aplicación fija la distancia y la muestra a la derecha de la retícula.
+6. Para cerrar la medición, hacé una sacudida de **abajo hacia arriba**.
 
-La escala es una referencia trigonométrica para estimación visual. La precisión real depende del FOV de la cámara, alineación del objeto, estabilidad del teléfono y características ópticas del VR Box.
+La distancia central se calcula mediante el ángulo físico de inclinación del teléfono respecto de la gravedad, usando la altura de cámara de 1,65 m. La referencia de 45 × 45 cm se conserva como referencia visual a 20 m. La precisión depende de la estabilidad del teléfono, la alineación con la base del objeto y las características del VR Box.
 
 ## Sensores en iPhone
-La aplicación solicita el permiso de orientación durante el botón inicial de arranque. iOS/Safari requiere una activación del usuario para solicitar acceso a los sensores de orientación cuando `requestPermission()` está disponible; para orientación absoluta se solicita el acceso adicional al magnetómetro.
+La aplicación solicita los permisos de orientación y movimiento durante el botón inicial de arranque. iOS/Safari requiere una activación del usuario para solicitar acceso a estos sensores cuando `requestPermission()` está disponible.
