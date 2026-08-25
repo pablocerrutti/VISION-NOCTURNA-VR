@@ -1,7 +1,9 @@
 window.LW=window.LW||{};
 LW.measureGesture=(()=>{
   let listening=false,last={alpha:null,elevation:null,time:0},lastTrigger=0;
-  const TRIGGER_DEG=3.0,CONFIRM_DEG=1.2,COOLDOWN_MS=1400,MAX_TRIGGER_INTERVAL=220;
+  // Activation deliberately requires a clearly intentional 10° movement.
+  // The 1-second fixation used by app-v2.js remains unchanged after activation.
+  const TRIGGER_DEG=10.0,CONFIRM_DEG=1.2,COOLDOWN_MS=1800,MAX_TRIGGER_INTERVAL=220;
   const finite=v=>Number.isFinite(v);
   const wrap=(a,b)=>{let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d};
   function landscapeElevation(e){
