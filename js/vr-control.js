@@ -1,10 +1,10 @@
 window.LW=window.LW||{};
 LW.vrControl=(()=>{
   let active=false,baseline=null,x=0,y=0,lastX=0,lastY=0,stableSince=0,onSelect=null,samples=[];
-  const DWELL=1000,STABLE_DEG=.65,SENS_X=10,SENS_Y=9;
+  const DWELL=1000,STABLE_DEG=1.0,SENS_X=10,SENS_Y=9;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const wrapDelta=(a,b)=>{let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d};
-  const median=arr=>{if(!arr.length)return null;const a=[...arr].sort((p,q)=>p-q);const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2};
+  const median=arr=>{if(!arr.length)return null;const a=[...arr].sort((p,q)=>p-q),m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2};
   function start(cb){onSelect=cb;active=true;baseline=null;stableSince=0;samples=[];window.addEventListener('deviceorientation',handle,true);window.addEventListener('deviceorientationabsolute',handle,true);return true}
   function stop(){active=false;baseline=null;stableSince=0;samples=[];window.removeEventListener('deviceorientation',handle,true);window.removeEventListener('deviceorientationabsolute',handle,true)}
   function reset(){baseline=null;stableSince=0;samples=[]}
@@ -19,13 +19,10 @@ LW.vrControl=(()=>{
     const stable=moved<1.5 && Math.abs(dx-(lastX-innerWidth/2)/SENS_X)<STABLE_DEG && Math.abs(dy-(lastY-innerHeight/2)/SENS_Y)<STABLE_DEG;
     if(stable){
       if(!stableSince){stableSince=now;samples=[]}
-      samples.push({x,y});
-      if(samples.length>90)samples.shift();
+      samples.push({x,y});if(samples.length>90)samples.shift();
       if(now-stableSince>=DWELL){
-        const mx=median(samples.map(p=>p.x))??x;
-        const my=median(samples.map(p=>p.y))??y;
-        const v=document.getElementById('view');
-        const px=mx/innerWidth*v.width,py=my/innerHeight*v.height;
+        const mx=median(samples.map(p=>p.x))??x,my=median(samples.map(p=>p.y))??y;
+        const v=document.getElementById('view'),px=mx/innerWidth*v.width,py=my/innerHeight*v.height;
         if(onSelect)onSelect({x:px,y:py});
         stableSince=now+350;samples=[];
       }
