@@ -1,8 +1,9 @@
 window.LW=window.LW||{};
 LW.measureGesture=(()=>{
   let listening=false,last={alpha:null,elevation:null,time:0},lastTrigger=0;
-  // Deliberate activation gesture: 30° avoids accidental head/camera movement.
-  const TRIGGER_DEG=30.0,COOLDOWN_MS=2200,MAX_TRIGGER_INTERVAL=260;
+  // Deliberate activation: 45° in either axis/direction. This is only the trigger;
+  // the 2-second fixation/capture sequence is handled by app-v2.js.
+  const TRIGGER_DEG=45.0,COOLDOWN_MS=2500,MAX_TRIGGER_INTERVAL=400;
   const finite=v=>Number.isFinite(v);
   const wrap=(a,b)=>{let d=a-b;while(d>180)d-=360;while(d<-180)d+=360;return d};
   function landscapeElevation(e){
