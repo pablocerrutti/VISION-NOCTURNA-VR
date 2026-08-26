@@ -2,19 +2,22 @@ window.LW=window.LW||{};
 LW.reticle={
  draw(ctx,w,h,s){
   if(!s.reticle)return;
-  // No Mil-Dot/static reticle. The aiming marker appears only during the two-point measurement.
-  if(!s.measureStage||!['base','baseLocked','top','topLocked','result'].includes(s.measureStage))return;
-  const cx=w/2,cy=h/2,c=s.mode==='thermal'?'rgba(255,255,255,.95)':'rgba(110,255,130,.95)';
-  ctx.save();
-  if(s.measureStage==='base'||s.measureStage==='top')this.targetPoint(ctx,cx,cy,w,c,s.measureStage);
-  if(s.measureStage==='baseLocked'||s.measureStage==='topLocked'||s.measureStage==='result'){
-   const p=s.measureStage==='baseLocked'?s.basePoint:s.topPoint;
-   if(p)this.lockedPoint(ctx,p.x,p.y,w,c)
-  }
-  if(s.basePoint&&s.topPoint)this.connection(ctx,s.basePoint,s.topPoint,w,c);
-  ctx.restore();
- },
- targetPoint(ctx,x,y,w,c,stage){ctx.save();ctx.strokeStyle=c;ctx.lineWidth=Math.max(3,w/500);const r=Math.max(22,w*.025);ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(x-r-12,y);ctx.lineTo(x+r+12,y);ctx.moveTo(x,y-r-12);ctx.lineTo(x,y+r+12);ctx.stroke();ctx.font=`bold ${Math.max(22,w/52)}px sans-serif`;ctx.textAlign='center';ctx.fillStyle=c;ctx.fillText(stage==='base'?'FIJE BASE':'FIJE ALTURA',x,y-r-Math.max(20,w*.025));ctx.restore()},
- lockedPoint(ctx,x,y,w,c){ctx.save();ctx.fillStyle=c;ctx.strokeStyle=c;ctx.lineWidth=Math.max(3,w/600);const r=Math.max(9,w*.012);ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(x-25,y);ctx.lineTo(x+25,y);ctx.moveTo(x,y-25);ctx.lineTo(x,y+25);ctx.stroke();ctx.restore()},
- connection(ctx,a,b,w,c){ctx.save();ctx.strokeStyle=c;ctx.globalAlpha=.75;ctx.lineWidth=Math.max(2,w/850);ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.setLineDash([]);ctx.font=`bold ${Math.max(20,w/62)}px sans-serif`;ctx.textAlign='center';ctx.fillStyle=c;ctx.fillText('75 CM',(a.x+b.x)/2+Math.max(30,w*.025),(a.y+b.y)/2);ctx.restore()}
+  if(s.measureStage!=='reference')return;
+  const c=s.mode==='thermal'?'rgba(255,255,255,.96)':'rgba(110,255,130,.96)';
+  // Visual reference: a 75 cm x 45 cm object at exactly 40 m.
+  // Angular size is derived from the current camera FOV, so the frame remains
+  // calibrated to the actual viewport rather than using a fixed screen size.
+  const targetH=.75,targetW=.45,distance=40;
+  const vf=(Number(s.fov)||35.06)*Math.PI/180;
+  const hf=2*Math.atan(Math.tan(vf/2)*(w/h));
+  const angularH=2*Math.atan((targetH/2)/distance),angularW=2*Math.atan((targetW/2)/distance);
+  const pxH=2*h*Math.tan(angularH/2)/Math.tan(vf/2);
+  const pxW=2*w*Math.tan(angularW/2)/Math.tan(hf/2);
+  const rw=Math.max(36,pxW),rh=Math.max(58,pxH),x=(w-rw)/2,y=(h-rh)/2;
+  ctx.save();ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=Math.max(3,w/500);ctx.setLineDash([12,9]);ctx.strokeRect(x,y,rw,rh);ctx.setLineDash([]);
+  const fs=Math.max(22,w/48);ctx.font=`900 ${fs}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=7;
+  ctx.fillText('75 × 45 CM  ·  40 M',w/2,y-fs*.35);
+  ctx.font=`900 ${Math.max(20,w/58)}px sans-serif`;ctx.textBaseline='top';ctx.fillText('REFERENCIA',w/2,y+rh+10);
+  ctx.lineWidth=Math.max(2,w/700);ctx.beginPath();const l=Math.min(38,rw*.18),t=Math.min(38,rh*.18);ctx.moveTo(x,y+t);ctx.lineTo(x,y);ctx.lineTo(x+l,y);ctx.moveTo(x+rw-l,y);ctx.lineTo(x+rw,y);ctx.lineTo(x+rw,y+t);ctx.moveTo(x,y+rh-t);ctx.lineTo(x,y+rh);ctx.lineTo(x+l,y+rh);ctx.moveTo(x+rw-l,y+rh);ctx.lineTo(x+rw,y+rh);ctx.lineTo(x+rw,y+rh-t);ctx.stroke();ctx.restore();
+ }
 };
