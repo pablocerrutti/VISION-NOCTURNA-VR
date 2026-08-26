@@ -3,7 +3,7 @@ LW.measure={
  cameraHeight:1.65,targetHeight:0.75,targetWidth:0.45,
  autoHeight:false,heightMin:0.70,heightMax:1.60,heightCalibrated:false,
  fov:35.06,horizontalFov:58.632,sourceWidth:1920,sourceHeight:1080,fovSource:'fallback',
- min:10,max:150,preferredAccuracyMax:80,
+ min:5,max:150,preferredAccuracyMax:80,
  clamp(v,a,b){return Math.min(b,Math.max(a,v))},
  setCameraHeight(h){const n=Number(h);if(!Number.isFinite(n))return this.cameraHeight;this.cameraHeight=this.clamp(n,this.heightMin,this.heightMax);this.autoHeight=true;this.heightCalibrated=true;return this.cameraHeight},
  clearAutoHeight(){this.autoHeight=false;this.heightCalibrated=false;this.cameraHeight=1.65},
