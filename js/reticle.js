@@ -17,14 +17,31 @@ LW.reticle={
   ctx.beginPath();ctx.arc(cx,cy,Math.max(2.5,w*.003),0,Math.PI*2);ctx.fill();
   ctx.restore();
   if(!s.scale)return;
-  // Reference frame is intentionally generic: 0.50 m x 0.72 m at 30 m.
-  // It is a visual calibration aid, not a human-targeting aid.
-  const targetH=.72,targetW=.50,distance=30;
-  const hf=Math.max(40,Math.min(70,Number(s.fov)||58.6))*Math.PI/180;
-  const vf=2*Math.atan(Math.tan(hf/2)*(h/Math.max(1,w)));
-  const angularH=2*Math.atan((targetH/2)/distance),angularW=2*Math.atan((targetW/2)/distance);
-  const pxH=h*Math.tan(angularH/2)/Math.tan(vf/2),pxW=w*Math.tan(angularW/2)/Math.tan(hf/2);
-  const rw=Math.max(18,pxW),rh=Math.max(26,pxH),x=cx-rw/2,y=cy-rh/2;
-  ctx.save();ctx.strokeStyle=c;ctx.lineWidth=Math.max(1.5,w/700);ctx.setLineDash([5,5]);ctx.strokeRect(x,y,rw,rh);ctx.setLineDash([]);ctx.font=`900 ${Math.max(11,w/90)}px monospace`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.shadowColor='rgba(0,0,0,.95)';ctx.shadowBlur=5;ctx.fillStyle=c;ctx.fillText('REFERENCIA 30 M',cx,y-5);ctx.restore();
+
+  // Referencia fija a 30 m. Dimensiones físicas genéricas: 0,50 m x 0,72 m.
+  // La escala se calcula por tamaño angular, sin activación por movimiento.
+  const targetH=0.72,targetW=0.50,distance=30;
+  const hfDeg=Number.isFinite(Number(s.fov))?Number(s.fov):58.632;
+  const hf=Math.max(40,Math.min(70,hfDeg))*Math.PI/180;
+  const aspect=w/Math.max(1,h);
+  const vf=2*Math.atan(Math.tan(hf/2)/aspect);
+
+  // Proyección gnomónica: tan(theta/2)/tan(FOV/2) da la fracción exacta del plano de imagen.
+  const pxW=w*Math.tan(Math.atan((targetW/2)/distance))/Math.tan(hf/2);
+  const pxH=h*Math.tan(Math.atan((targetH/2)/distance))/Math.tan(vf/2);
+  const rw=pxW,rh=pxH,x=cx-rw/2,y=cy-rh/2;
+
+  ctx.save();
+  ctx.strokeStyle=c;
+  ctx.lineWidth=Math.max(1.5,w/700);
+  ctx.setLineDash([5,5]);
+  ctx.strokeRect(x,y,rw,rh);
+  ctx.setLineDash([]);
+  ctx.font=`900 ${Math.max(11,w/90)}px monospace`;
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  ctx.shadowColor='rgba(0,0,0,.95)';ctx.shadowBlur=5;
+  ctx.fillStyle=c;
+  ctx.fillText('REFERENCIA 30 M',cx,y-5);
+  ctx.restore();
  }
 };
