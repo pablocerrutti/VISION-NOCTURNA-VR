@@ -2,22 +2,29 @@ window.LW=window.LW||{};
 LW.reticle={
  draw(ctx,w,h,s){
   if(!s.reticle)return;
-  if(s.measureStage!=='reference')return;
   const c=s.mode==='thermal'?'rgba(255,255,255,.96)':'rgba(110,255,130,.96)';
-  // Visual reference: a 75 cm x 45 cm object at exactly 40 m.
-  // Angular size is derived from the current camera FOV, so the frame remains
-  // calibrated to the actual viewport rather than using a fixed screen size.
-  const targetH=.75,targetW=.45,distance=40;
-  const vf=(Number(s.fov)||35.06)*Math.PI/180;
-  const hf=2*Math.atan(Math.tan(vf/2)*(w/h));
+  const cx=w/2,cy=h/2;
+  ctx.save();
+  ctx.strokeStyle=c;ctx.fillStyle=c;ctx.shadowColor='rgba(0,0,0,.95)';ctx.shadowBlur=5;
+  const gap=Math.max(9,w*.008),arm=Math.max(22,w*.024),lw=Math.max(2,w/420);
+  ctx.lineWidth=lw;
+  ctx.beginPath();
+  ctx.moveTo(cx-arm,cy);ctx.lineTo(cx-gap,cy);
+  ctx.moveTo(cx+gap,cy);ctx.lineTo(cx+arm,cy);
+  ctx.moveTo(cx,cy-arm);ctx.lineTo(cx,cy-gap);
+  ctx.moveTo(cx,cy+gap);ctx.lineTo(cx,cy+arm);
+  ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,Math.max(2.5,w*.003),0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  if(!s.scale)return;
+  // Reference frame is intentionally generic: 0.50 m x 0.72 m at 30 m.
+  // It is a visual calibration aid, not a human-targeting aid.
+  const targetH=.72,targetW=.50,distance=30;
+  const hf=Math.max(40,Math.min(70,Number(s.fov)||58.6))*Math.PI/180;
+  const vf=2*Math.atan(Math.tan(hf/2)*(h/Math.max(1,w)));
   const angularH=2*Math.atan((targetH/2)/distance),angularW=2*Math.atan((targetW/2)/distance);
-  const pxH=2*h*Math.tan(angularH/2)/Math.tan(vf/2);
-  const pxW=2*w*Math.tan(angularW/2)/Math.tan(hf/2);
-  const rw=Math.max(36,pxW),rh=Math.max(58,pxH),x=(w-rw)/2,y=(h-rh)/2;
-  ctx.save();ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=Math.max(3,w/500);ctx.setLineDash([12,9]);ctx.strokeRect(x,y,rw,rh);ctx.setLineDash([]);
-  const fs=Math.max(22,w/48);ctx.font=`900 ${fs}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=7;
-  ctx.fillText('75 × 45 CM  ·  40 M',w/2,y-fs*.35);
-  ctx.font=`900 ${Math.max(20,w/58)}px sans-serif`;ctx.textBaseline='top';ctx.fillText('REFERENCIA',w/2,y+rh+10);
-  ctx.lineWidth=Math.max(2,w/700);ctx.beginPath();const l=Math.min(38,rw*.18),t=Math.min(38,rh*.18);ctx.moveTo(x,y+t);ctx.lineTo(x,y);ctx.lineTo(x+l,y);ctx.moveTo(x+rw-l,y);ctx.lineTo(x+rw,y);ctx.lineTo(x+rw,y+t);ctx.moveTo(x,y+rh-t);ctx.lineTo(x,y+rh);ctx.lineTo(x+l,y+rh);ctx.moveTo(x+rw-l,y+rh);ctx.lineTo(x+rw,y+rh);ctx.lineTo(x+rw,y+rh-t);ctx.stroke();ctx.restore();
+  const pxH=h*Math.tan(angularH/2)/Math.tan(vf/2),pxW=w*Math.tan(angularW/2)/Math.tan(hf/2);
+  const rw=Math.max(18,pxW),rh=Math.max(26,pxH),x=cx-rw/2,y=cy-rh/2;
+  ctx.save();ctx.strokeStyle=c;ctx.lineWidth=Math.max(1.5,w/700);ctx.setLineDash([5,5]);ctx.strokeRect(x,y,rw,rh);ctx.setLineDash([]);ctx.font=`900 ${Math.max(11,w/90)}px monospace`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.shadowColor='rgba(0,0,0,.95)';ctx.shadowBlur=5;ctx.fillStyle=c;ctx.fillText('REFERENCIA 30 M',cx,y-5);ctx.restore();
  }
 };
