@@ -1,5 +1,5 @@
-const CACHE_NAME='lonewolf-nightvision-v32';
-const SHELL=['./','./index.html','./css/style.css','./js/performance.js','./js/camera.js','./js/image-processing.js','./js/measurement-v2.js','./js/reticle.js','./js/measurement-frame.js','./js/vr.js','./js/compass-v2.js','./js/vr-control.js','./js/app-v2.js','./manifest.json','./assets/icon-192.jpg','./assets/icon-512.jpg'];
+const CACHE_NAME='lonewolf-nightvision-v33';
+const SHELL=['./','./index.html','./css/style.css','./js/performance.js','./js/camera.js','./js/image-processing.js','./js/measurement-v2.js','./js/reticle.js','./js/measurement-frame.js','./js/vr.js','./js/compass-v2.js','./js/vr-control.js','./js/app-v2.js','./js/nightvision-plus.js','./manifest.json','./assets/icon-192.jpg','./assets/icon-512.jpg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(
