@@ -42,7 +42,7 @@ function applyExposure(){
 }
 function resetHistory(){cfg.historyFrames=[];cfg.width=0;cfg.height=0}
 function temporal(data,w,h,mode){
- if(!cfg.temporal||mode==='normal'||!w||!h)return;
+ if(!cfg.temporal||mode==='normal'||!w||!h||cfg.frames<=1)return;
  const strength=(mode==='extreme'?.56:.32);
  const threshold=12+(cfg.noise/100)*24;
  if(cfg.width!==w||cfg.height!==h){cfg.historyFrames=[];cfg.width=w;cfg.height=h}
