@@ -93,7 +93,7 @@ function observeMode(){
  body.observe(document.body,{attributes:true,attributeFilter:['data-mode']});
 }
 function init(){addControlUI();install();observeMode();document.querySelectorAll('[data-mode="lowlight"],[data-mode="extreme"]').forEach(b=>b.addEventListener('click',()=>resetHistory()));}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+init();
 window.addEventListener('resize',resetHistory);
 window.LW.nightVisionPlus={config:cfg,resetHistory,applyExposure};
 })();
